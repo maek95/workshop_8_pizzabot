@@ -1,0 +1,3 @@
+Can we still use a submit button WITHOUT sending the user to a new website with the submit-data? At the moment the user could leave the Name and Mobilnr input-fields empty without any problem...
+
+is it possible to do a queryselectorALL and store all the data in an object?

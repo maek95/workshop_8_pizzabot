@@ -1,37 +1,10 @@
+
+
 const vegetarian = "Vegetarian Pizza";
 const hawaiian = "Hawaiian Pizza";
 const pepperoni = "Pepperoni Pizza";
 
 const pizzaPrice = 80;
-
-//Put your Javscript code here:
-
-alert(
-  `Hey! Happy to serve your pizza. On our menu we have ${vegetarian}, ${hawaiian}, and ${pepperoni}`
-);
-
-let orderName = ""; // have to initialize outside while-loop?
-let orderNameEdited = ""; 
-let isPizzaOnMenu = false;
-// repeat user input until the orderName is found on the menu
-while (isPizzaOnMenu == false) {
-  orderName = prompt("Enter the name of the pizza you want to order today."); // user input
-  orderNameEdited = fixOrderName(orderName);
-  isPizzaOnMenu = checkOrderName(orderNameEdited);
-}
-// the function above, checkOrderName(), couldve been better if it simply returned an orderName that fit all the conditions, rather than just returning true or false? See how I did with checkAndFixOrderQuantit() below....
-
-// TODO: fix orderNameEdited so every word starts with capital letters...? "Hawaiian Pizza" instead of "hawaiian pizza"...
-let orderQuantity = prompt(`How many of ${orderNameEdited} do you want?`);
-orderQuantity = checkAndFixOrderQuantity(orderQuantity); // check so input is an integer (not words, float-numbers, or negative numbers). If not it repeats the prompt.
-
-const orderWaitTime = cookingTime(orderQuantity);
-
-const orderTotal = totalCost(orderQuantity, pizzaPrice);
-
-alert(
-  `Great, I'll get started on your ${orderQuantity} ${orderNameEdited} right away, it will cost ${orderTotal} kr. The pizzas will take ${orderWaitTime} minutes.`
-);
 
 // ==================================================
 // ==================================================
@@ -39,20 +12,39 @@ alert(
 // ==================================================
 // ==================================================
 
-function fixOrderName(orderName) {
-  // We allow the user to write with upper or lowercase, and it is ok for the user to not "pizza" (e.g. only writes "hawaiian") because we add it ourselves if so.
-  orderName = orderName.trim().toLowerCase(); // remove whitespaces at start and end, and make string lower case.
-  if (!orderName.includes("pizza")) {
-    orderName = orderName + " pizza"; // "hawaiian" becomes "hawaiian pizza"
+function getFormInfo() {
+  let orderName = document.querySelector(`#pizzaSelect`).value;
+  /* console.log(orderName); */
+  let isPizzaOnMenu = checkOrderName(orderName);
+  if (isPizzaOnMenu == false) {
+    alert("Vänligen ange en Pizza som finns på menyn...");
+    document.getElementById(`#pizzaSelect`).value = ""; // nollställer
+    getFormInfo(); // start over
   }
-  return orderName;
-}
+ 
+  let orderQuantity = document.querySelector(`#orderQuantity`).value;
+  let realAmount = checkOrderQuantity(orderQuantity);
+  if (realAmount == false) {
+    alert("Vänligen ange en riktig mängd pizzor...");
+    document.getElementById(`#orderQuantity`).value = 0; // nollställer
+    getFormInfo(); // start over
+  }
 
-function checkOrderName(orderNameEdited) {
+  const orderWaitTime = cookingTime(orderQuantity);
+
+  const orderTotal = totalCost(orderQuantity, pizzaPrice);
+    
+  alert(
+  `Great, I'll get started on your ${orderQuantity} ${orderName} right away, it will cost ${orderTotal} kr. The pizzas will take ${orderWaitTime} minutes.`
+);
+  
+} 
+
+function checkOrderName(orderName) {
   if (
-    orderNameEdited == vegetarian.toLowerCase() ||
-    orderNameEdited == hawaiian.toLowerCase() ||
-    orderNameEdited == pepperoni.toLowerCase()
+    orderName == vegetarian ||
+    orderName == hawaiian ||
+    orderName == pepperoni
   ) {
     return true;
   } else {
@@ -60,20 +52,15 @@ function checkOrderName(orderNameEdited) {
   }
 }
 
-function checkAndFixOrderQuantity(orderQuantity) {
-  orderQuantity = parseInt(orderQuantity); // make sure the user input is an integer (heltal)... e.g. 5.7 will transform to 5... HOWEVER, still an issue if user writes a string!
-  while (!Number.isInteger(orderQuantity)) {
-    orderQuantity = prompt(`How many of ${orderNameEdited} do you want?`);
-    orderQuantity = parseInt(orderQuantity);
+function checkOrderQuantity(orderQuantity) {
+  orderQuantity = parseInt(orderQuantity); // make sure the user input is an integer (heltal)... e.g. 5.7 will transform to 5... 
+  if (!Number.isInteger(orderQuantity)) { // e.g. false if String
+    return false;
   }
-  while (orderQuantity < 0) {
-    orderQuantity = prompt(
-      `Please insert a real amount...How many of ${orderNameEdited} do you want?`
-    );
-    orderQuantity = parseInt(orderQuantity);
+  if (orderQuantity < 0) { // could do || in the if-statement above...
+    return false;
   }
-
-  return orderQuantity;
+  return true;
 }
 
 function cookingTime(orderQuantity) {
@@ -97,3 +84,14 @@ function totalCost(orderQuantity, pizzaPrice) {
 }
 
 
+
+// not using, only used when User could type in their pizza (instead of drop-down-menu):
+
+function fixOrderName(orderName) {
+  // We allow the user to write with upper or lowercase, and it is ok for the user to not "pizza" (e.g. only writes "hawaiian") because we add it ourselves if so.
+  orderName = orderName.trim().toLowerCase(); // remove whitespaces at start and end, and make string lower case.
+  if (!orderName.includes("pizza")) {
+    orderName = orderName + " pizza"; // "hawaiian" becomes "hawaiian pizza"
+  }
+  return orderName;
+}
